@@ -1,0 +1,2 @@
+# Voting Prototyp API
+
