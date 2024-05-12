@@ -7,17 +7,24 @@ import {
   Tooltip,
   Legend,
   CategoryScale,
-  ChartData,
   LinearScale,
   BarElement,
 } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
-import { Gender } from '../utils/constants';
+import { API_URL, COLORS, Gender } from '../utils/constants';
+import { DemographicBreakdown } from '../types/DemographicBreakdown';
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement
+);
 
 export default function Candidate() {
-  const [breakdown, setBreakdown] = useState<any>(null);
+  const [breakdown, setBreakdown] = useState<DemographicBreakdown | null>(null);
   const params = useParams();
 
   const genderOptions: any = useMemo(() => {
@@ -30,12 +37,14 @@ export default function Candidate() {
     if (!breakdown) return null;
 
     return {
-      labels: Object.keys(breakdown.genderBreakdown).map((k) => Gender[k] || 'Unknown'),
+      labels: Object.keys(breakdown.genderBreakdown).map(
+        (k) => Gender[k] || 'Unknown'
+      ),
       datasets: [
         {
           label: '# of voters',
           data: Object.values(breakdown.genderBreakdown),
-          backgroundColor: ['red', 'green', 'blue', 'orange'],
+          backgroundColor: COLORS,
         },
       ],
     };
@@ -44,7 +53,16 @@ export default function Candidate() {
   const ageOptions: any = useMemo(() => {
     if (!breakdown) return null;
 
-    return {};
+    return {
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Age (in years)',
+          },
+        },
+      },
+    };
   }, [breakdown]);
 
   const ageData: any = useMemo(() => {
@@ -56,7 +74,9 @@ export default function Candidate() {
         {
           label: '# of voters',
           data: Object.values(breakdown.ageBreakdown),
-          backgroundColor: ['red', 'green', 'blue', 'orange'],
+          backgroundColor: [...COLORS].reverse(),
+          maxBarThickness: 40,
+          borderRadius: { topLeft: 5, topRight: 5 },
         },
       ],
     };
@@ -64,7 +84,7 @@ export default function Candidate() {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch(`http://localhost:5000/candidate/${params.id}/breakdown`, {
+    fetch(`${API_URL}/candidate/${params.id}/breakdown`, {
       signal: controller.signal,
     })
       .then((res) => res.json())
@@ -80,15 +100,22 @@ export default function Candidate() {
 
   return (
     <div>
-      <h1>{breakdown.name}</h1>
-      <div>
-        <h2>Gender</h2>
-        <Doughnut options={genderOptions} data={genderData} />
-      </div>
-      <div>
-        <h2>Age</h2>
-        <Bar options={ageOptions} data={ageData} />
-      </div>
+      <h1 className="text-3xl sm:text-5xl mb-2">{breakdown.name}</h1>
+      <p>
+        {breakdown.count} votes | {breakdown.party} Group
+      </p>
+      {breakdown.count > 0 && (
+        <div className="sm:flex flex-nowrap -mx-4 mt-5">
+          <div className="sm:w-1/3 px-4">
+            <h2 className="mb-3 font-semibold text-lg">Gender</h2>
+            <Doughnut options={genderOptions} data={genderData} />
+          </div>
+          <div className="flex-1 px-4">
+            <h2 className="mb-3 font-semibold text-lg">Age</h2>
+            <Bar options={ageOptions} data={ageData} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

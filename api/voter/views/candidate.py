@@ -23,29 +23,35 @@ def get_candidates():
 @bp.post('<int:candidate_id>/vote')
 def cast_vote(candidate_id: int):
     """Adds a new vote entry for the specified candidate."""
-    if 'voter_id' not in request.json:
-        return 'Voter ID missing', 400
+    if 'voter_id' not in request.json or request.json['voter_id'] is None:
+        return jsonify('Voter ID missing'), 400
+    
+    voter_id = str(request.json['voter_id'])
+    if len(voter_id) > 10 or len(voter_id) == 0:
+        return jsonify('Invalid Voter ID'), 400
 
     candidate = db.get_or_404(Candidate, candidate_id)
     vote = Vote(voter_id=request.json['voter_id'], candidate_id=candidate.id)
 
-    if 'gender' in request.json and request.json['gender'] and Gender[request.json['gender']]:
+    if 'gender' in request.json and request.json['gender']:
+        if request.json['gender'] not in Gender:
+            return jsonify('Invalid gender'), 400
         vote.gender = Gender[request.json['gender']]
 
     if 'age' in request.json:
         try:
             age = int(request.json['age'])
             if age < 18 or age > 150:
-                return 'Invalid Age', 400
+                return jsonify('Invalid Age'), 400
             vote.age = age
         except:
-            return 'Invalid Age', 400
+            return jsonify('Invalid Age'), 400
 
     db.session.add(vote)
     try:
         db.session.commit()
     except exc.IntegrityError:
-        return 'Voter ID has already registered', 400
+        return jsonify('Voter ID has already registered'), 400
 
     return jsonify({
         'candidate_id': candidate.id,
@@ -58,7 +64,10 @@ def get_breakdown(candidate_id: int):
     """Gives demographic breakdown of all votes for the specific candidate."""
     candidate = db.get_or_404(Candidate, candidate_id)
     gender = db.session.execute(
-        db.select(Vote.gender, func.count()).group_by(Vote.gender))
+        db.select(Vote.gender, func.count())
+        .where(Vote.candidate_id == candidate.id)
+        .group_by(Vote.gender)
+    )
     gender_breakdown = {}
     for g in gender:
         k = 'unknown' if g[0] is None else g[0].value
@@ -72,25 +81,30 @@ def get_breakdown(candidate_id: int):
             k = str(range[1]) + ' and less'
             where_clause = Vote.age <= range[1]
         elif range[1] is None:
-            k = str(range[1]) + ' and more'
-            where_clause = between(
-                expr=Vote.age, lower_bound=range[0], upper_bound=range[1])
+            k = str(range[0]) + ' and more'
+            where_clause = Vote.age >= range[0]
         else:
             k = str(range[0]) + ' - ' + str(range[1])
-            where_clause = Vote.age >= range[0]
+            where_clause = between(
+                expr=Vote.age, lower_bound=range[0], upper_bound=range[1])
 
         v = db.session.execute(
-            db.select(func.count()).where(where_clause)).scalar()
+            db.select(func.count())
+            .where((Vote.candidate_id == candidate.id) & (where_clause))
+        ).scalar()
         if v > 0:
             age_breakdown[k] = v
 
     age_unknown = db.session.execute(
-        db.select(func.count()).where(Vote.age is None)).scalar()
+        db.select(func.count())
+        .where((Vote.candidate_id == candidate.id) & (Vote.age == None))
+    ).scalar()
     if age_unknown > 0:
         age_breakdown['unknown'] = age_unknown
 
     return jsonify({
         **candidate.json(),
+        'count': candidate.get_votes(),
         'genderBreakdown': gender_breakdown,
         'ageBreakdown': age_breakdown,
     })
