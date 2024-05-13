@@ -12,7 +12,7 @@ bp = Blueprint('candidate', __name__, url_prefix='/candidate')
 db = get_db()
 
 
-@bp.get('votes')
+@bp.get('/votes')
 def get_votes():
     return jsonify(Candidate.get_all_votes())
 
@@ -22,7 +22,7 @@ def get_candidates():
     return jsonify([c.json() for c in db.session.execute(db.select(Candidate)).scalars()])
 
 
-@bp.post('<int:candidate_id>/vote')
+@bp.post('/<int:candidate_id>/vote')
 def cast_vote(candidate_id: int):
     """Adds a new vote entry for the specified candidate."""
     if 'voter_id' not in request.json or request.json['voter_id'] is None:
@@ -61,7 +61,7 @@ def cast_vote(candidate_id: int):
     })
 
 
-@bp.get('<int:candidate_id>/breakdown')
+@bp.get('/<int:candidate_id>/breakdown')
 def get_breakdown(candidate_id: int):
     """Gives demographic breakdown of all votes for the specific candidate."""
     

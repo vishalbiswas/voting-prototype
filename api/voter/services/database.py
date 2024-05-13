@@ -19,16 +19,8 @@ def init_db():
     db.create_all()
 
 
-@click.command('init-db')
-def init_db_command():
-    """Clear the existing data and create new tables."""
-    init_db()
-    click.echo('Initialized the database.')
-
-
-@click.command('seed-db')
-def seed_db_command():
-    """Seed the database with Candidates"""
+def seed_db():
+    db = get_db()
     from ..models import Candidate
     db.session.add_all([
         Candidate(name='Lalita Saini',
@@ -39,6 +31,19 @@ def seed_db_command():
                   symbol='https://raw.githubusercontent.com/atisawd/boxicons/master/svg/solid/bxs-brightness.svg', party='Sailing Spirit'),
     ])
     db.session.commit()
+
+
+@click.command('init-db')
+def init_db_command():
+    """Clear the existing data and create new tables."""
+    init_db()
+    click.echo('Initialized the database.')
+
+
+@click.command('seed-db')
+def seed_db_command():
+    """Seed the database with Candidates"""
+    seed_db()
     click.echo('Candidates created.')
 
 

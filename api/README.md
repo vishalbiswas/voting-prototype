@@ -1,4 +1,4 @@
-# Voting Prototyp API
+# Voting Prototype API
 
 A taluka voting application with a real-time dashboard and demographic breakdown of votes.
 
@@ -123,7 +123,7 @@ It will give you the URL where the Flask API is available.
 }
 ```
 
-#### 4. Real-time updates WebSocket/SocketIO
+#### 5. Real-time updates WebSocket/SocketIO
 
 - **Event:** `update_votes`
 - **Protocol:** `WebSocket / SocketIO`
