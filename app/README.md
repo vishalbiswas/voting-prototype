@@ -29,6 +29,20 @@ This React front-end app interacts with the Flask API to provide a user interfac
 - **Path:** `/candidate/<id>`
 - **Description:** Displays detailed information about a specific candidate, including their total votes and demographic breakdown.
 
+## Screenshots
+
+### Leaderboard
+
+![Leaderboard](./screenshots/leaderboard.png 'Leaderboard')
+
+### Demographic Breakdown
+
+![Demographic Breakdown](./screenshots/breakdown.png 'Demographic Breakdown')
+
+### Voting Form
+
+![Voting Form](./screenshots/voting.png 'Voting Form')
+
 ## Additional Notes
 
 - The React app communicates with the Flask API via HTTP requests to retrieve and submit data.
@@ -42,3 +56,4 @@ This React front-end app interacts with the Flask API to provide a user interfac
 
 - Unit testing using vitest
 - Full support for Dark mode
+- Identify lazy loading points for routes
