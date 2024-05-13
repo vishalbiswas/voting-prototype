@@ -10,6 +10,7 @@ from .services import database, socket
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    # TODO: manage configuration from environment variables and .env
     app.config.from_mapping(
         SECRET_KEY='dev',
         SQLALCHEMY_DATABASE_URI='sqlite:///' +

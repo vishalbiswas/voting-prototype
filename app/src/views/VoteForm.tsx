@@ -37,7 +37,13 @@ export default function VoteForm() {
         if (res.ok) {
           navigate('/');
         } else {
-          setError(await res.json());
+          let error = { message: null };
+          try {
+            error = await res.json();
+          } catch (err) {
+            console.log(err);
+          }
+          setError(error?.message || 'Something went wrong!');
         }
       });
     },
@@ -67,7 +73,9 @@ export default function VoteForm() {
 
   return (
     <form onSubmit={handleSubmit(vote)}>
-      {error && <p className="bg-red-400 text-white rounded px-3 py-2 mb-3">{error}</p>}
+      {error && (
+        <p className="bg-red-400 text-white rounded px-3 py-2 mb-3">{error}</p>
+      )}
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
         <FormGroup error={errors.candidate}>
           <label>
@@ -123,7 +131,10 @@ export default function VoteForm() {
 
         <FormGroup error={errors.age}>
           <label>Age (in years)</label>
-          <TextInput type="number" {...register('age', { min: 18, max: 150 })} />
+          <TextInput
+            type="number"
+            {...register('age', { min: 18, max: 150 })}
+          />
         </FormGroup>
       </div>
 

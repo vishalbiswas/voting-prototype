@@ -39,7 +39,7 @@ export default function useVotes() {
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
-      socket.off('update_vote', onVotesUpdated);
+      socket.off('update_votes', onVotesUpdated);
     };
   }, []);
 

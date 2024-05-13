@@ -27,7 +27,7 @@ def init_db_command():
 
 
 @click.command('seed-db')
-def init_db_command():
+def seed_db_command():
     """Seed the database with Candidates"""
     from ..models import Candidate
     db.session.add_all([

@@ -1,30 +1,44 @@
-# React + TypeScript + Vite
+# Voting Prototype Front-end
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This React front-end app interacts with the Flask API to provide a user interface for viewing a leaderboard of votes, casting votes, and displaying demographic breakdowns.
 
-Currently, two official plugins are available:
+## Requirements
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. NodeJS v20+
+2. Browser that supports WebSocket API / SocketIO
 
-## Expanding the ESLint configuration
+## Setup
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+1. Install dependencies `npm ci`
+2. Run in dev mode `npm run dev`
 
-- Configure the top-level `parserOptions` property like this:
+## Routes
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+### 1. Leaderboard
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+- **Path:** `/`
+- **Description:** Displays a leaderboard showing the total votes for each candidate. Each new vote gets updated on the leaderboard in real-time.
+
+### 2. Vote Form
+
+- **Path:** `/vote`
+- **Description:** Provides a form for users to cast their votes for candidates.
+
+### 3. Candidate Details
+
+- **Path:** `/candidate/<id>`
+- **Description:** Displays detailed information about a specific candidate, including their total votes and demographic breakdown.
+
+## Additional Notes
+
+- The React app communicates with the Flask API via HTTP requests to retrieve and submit data.
+- Routing is implemented using React Router to navigate between different views/components.
+- WebSocket / SocketIO is utilized for vote count updates.
+- Chart.js is used for demographic charts.
+- TailwindCSS is used for styling.
+- Operating System dark mode behaviour is respected.
+
+### Next Steps
+
+- Unit testing using vitest
+- Full support for Dark mode

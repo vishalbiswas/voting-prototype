@@ -2,11 +2,11 @@
 import enum
 from typing import Optional
 
-from sqlalchemy import String, ForeignKey, Enum, Integer, distinct, func
+from sqlalchemy import String, ForeignKey, Enum, Integer, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 
-from .services.database import get_db
+from ..services.database import get_db
 
 db = get_db()
 
