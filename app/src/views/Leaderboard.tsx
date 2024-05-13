@@ -19,6 +19,7 @@ const CandidateStat = ({
       <div
         className="rounded h-5 bg-orange-400"
         style={{ width: percent * 100 + '%', minWidth: '2px' }}
+        data-testid="progress"
       ></div>
       <p className="font-bold">{candidate.count} votes</p>
       <h3 className="text-xl font-semibold">{candidate.name}</h3>
